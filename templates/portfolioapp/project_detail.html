@@ -1,0 +1,395 @@
+{% extends 'portfolioapp/base.html' %}
+{% block title %}{{ project.title }}{% endblock %}
+{% load static %}
+
+{% block content %}
+<style>
+    /* Styles inchangés pour la mise en forme des éléments */
+    h1.mb-4, p, h5, h6 {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .container.my-5 {
+        padding: 0 !important;
+    }
+
+    h1.mb-4 {
+        font-weight: bold;
+    }
+
+    .card h6 {
+        margin-top: 0 !important;
+    }
+
+    .card img {
+        margin-bottom: 0 !important;
+    }
+
+    .card .mb-3 {
+        margin-bottom: 0 !important;
+    }
+
+    .project-main-img {
+        width: 100%;
+        max-width: 670px;
+        height: auto;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+
+    .category-project {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .category-project img {
+        width: 190px;
+        height: 120px;
+        object-fit: cover;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        margin-right: 15px;
+    }
+
+    .category-project .project-info {
+        flex-grow: 1;
+    }
+
+    .category-project .project-info h6 {
+        font-weight: bold;
+        font-size: 1.1em;
+    }
+
+    .category-project .project-info p {
+        color: #6c757d;
+        font-size: 0.9em;
+        margin-top: 5px;
+    }
+
+    .category-project a {
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    /* Styles pour les commentaires (inspirés de Facebook) */
+    .comment-section {
+        margin-top: 2rem;
+    }
+
+    .comment-form textarea {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin-bottom: 0.5rem;
+    }
+
+    .comment-form button {
+        background-color: #1877f2; /* Bleu Facebook */
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .comment-form button:hover {
+        background-color: #165db2;
+    }
+
+    .comments-list {
+        margin-top: 1rem;
+    }
+
+    .comment {
+        margin-bottom: 1rem;
+        padding: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+    }
+
+    .comment-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .comment-author-img {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        margin-right: 0.5rem;
+    }
+
+    .comment-author-name {
+        font-weight: bold;
+        margin-right: 0.5rem;
+    }
+
+    .comment-date {
+        color: #6c757d;
+        font-size: 0.9em;
+    }
+
+    .comment-text {
+        margin-top: 0.5rem;
+    }
+
+    .toggle-replies-btn {
+        background: none;
+        border: none;
+        color: #1877f2;
+        cursor: pointer;
+        padding: 0;
+        margin-top: 0.5rem;
+    }
+
+    .toggle-replies-btn:hover {
+        text-decoration: underline;
+    }
+
+    .replies-section {
+        margin-top: 1rem;
+        padding-left: 2rem;
+        border-left: 2px solid #ddd;
+    }
+
+    .reply {
+        margin-bottom: 1rem;
+    }
+
+    .reply-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .reply-author-img {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        margin-right: 0.5rem;
+    }
+
+    .reply-author-name {
+        font-weight: bold;
+        margin-right: 0.5rem;
+    }
+
+    .reply-date {
+        color: #6c757d;
+        font-size: 0.9em;
+    }
+
+    .reply-text {
+        margin-top: 0.5rem;
+    }
+
+    .reply-form textarea {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        margin-bottom: 0.5rem;
+    }
+
+    .reply-form button {
+        background-color: #1877f2;
+        color: white;
+        border: none;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .reply-form button:hover {
+        background-color: #165db2;
+    }
+
+    /* Style pour les messages de connexion */
+    .login-prompt {
+        color: #1877f2;
+        font-weight: bold;
+        margin-top: 0.5rem;
+    }
+
+    .login-prompt a {
+        color: #1877f2;
+        text-decoration: underline;
+    }
+</style>
+
+<div class="container my-5">
+    <div class="row">
+        <!-- Détails du projet -->
+        <div class="col-md-8">
+            <img src="{% if project.image %}{{ project.image.url }}{% else %}{% static 'images/default.jpg' %} {% endif %}"
+                 class="img-fluid rounded project-main-img" alt="{{ project.title }}">
+            <h1 class="mb-4">{{ project.title }}</h1>
+            <p>{{ project.description |safe }}</p>
+
+            <!-- Section des commentaires -->
+            <div class="comment-section">
+                <h4>Commentaires</h4>
+
+                <!-- Formulaire pour ajouter un commentaire -->
+                {% if user.is_authenticated %}
+                    <form method="post" action="{% url 'add_comment' project.id %}" class="comment-form">
+                        {% csrf_token %}
+                        <textarea name="text" rows="2" placeholder="Ajouter un commentaire..." required></textarea>
+                        <button type="submit" class="btn btn-primary">Commenter</button>
+                    </form>
+                {% else %}
+                    <p class="login-prompt">
+                        <a href="{% url 'login' %}?next={{ request.path }}">Connectez-vous</a> pour ajouter un commentaire.
+                    </p>
+                {% endif %}
+
+                <!-- Liste des commentaires -->
+                <div class="comments-list">
+                    {% for comment in project.comments.all %}
+                        <div class="comment">
+                            <div class="comment-header">
+                                <img src="{% if comment.author.profile.image %}{{ comment.author.profile.image.url }}{% else %}{% static 'images/default-profile.jpg' %}{% endif %}"
+                                     alt="{{ comment.author.username }}" class="comment-author-img">
+                                <div class="comment-author-name">{{ comment.author.username }}</div>
+                                <div class="comment-date">{{ comment.created_at|timesince }}</div>
+                            </div>
+                            <div class="comment-text">{{ comment.text }}</div>
+
+                            <!-- Bouton pour afficher/masquer les réponses -->
+                            <button class="toggle-replies-btn" data-comment-id="{{ comment.id }}">
+                                {% if comment.replies.count > 0 %}
+                                    {{ comment.replies.count }} réponses
+                                {% else %}
+                                    Répondre
+                                {% endif %}
+                            </button>
+
+                            <!-- Section des réponses (masquée par défaut) -->
+                            <div class="replies-section" id="replies-{{ comment.id }}" style="display: none;">
+                                <!-- Liste des réponses -->
+                                {% for reply in comment.replies.all %}
+                                    <div class="reply">
+                                        <div class="reply-header">
+                                            <img src="{% if reply.author.profile.image %}{{ reply.author.profile.image.url }}{% else %}{% static 'images/default-profile.jpg' %}{% endif %}"
+                                                 alt="{{ reply.author.username }}" class="reply-author-img">
+                                            <div class="reply-author-name">{{ reply.author.username }}</div>
+                                            <div class="reply-date">{{ reply.created_at|timesince }}</div>
+                                        </div>
+                                        <div class="reply-text">{{ reply.text }}</div>
+                                    </div>
+                                {% endfor %}
+
+                                <!-- Formulaire pour ajouter une réponse -->
+                                {% if user.is_authenticated %}
+                                    <form method="post" action="{% url 'add_reply' comment.id %}" class="reply-form">
+                                        {% csrf_token %}
+                                        <textarea name="text" rows="1" placeholder="Répondre..." required></textarea>
+                                        <button type="submit" class="btn btn-primary btn-sm">Répondre</button>
+                                    </form>
+                                {% else %}
+                                    <p class="login-prompt">
+                                        <a href="{% url 'login' %}?next={{ request.path }}">Connectez-vous</a> pour répondre à ce commentaire.
+                                    </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p>Soyez le premier à commenter !</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Projets par Catégories -->
+        <div class="col-md-4">
+            <h4 class="mb-4">Projets par Catégories</h4>
+            <div class="list-group">
+                <!-- Affichage de "Non catégorisé" en premier -->
+                {% if "non_categorise" in projects_by_category %}
+                    <a href="#category-non-categorise" class="list-group-item list-group-item-action">
+                        Non catégorisé
+                    </a>
+                {% endif %}
+
+                <!-- Affichage des autres catégories -->
+                {% for category, projects in projects_by_category.items %}
+                    {% if category != "non_categorise" %}
+                        <a href="#category-{{ forloop.counter }}" class="list-group-item list-group-item-action">
+                            {{ category.name | default:"Non catégorisé" }}
+                        </a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+            <div class="mt-4">
+                <!-- Projets "Non catégorisé" -->
+                {% if "non_categorise" in projects_by_category %}
+                    <h5 id="category-non-categorise" class="mt-4">Non catégorisé</h5>
+                    <div class="card mb-3">
+                        {% for proj in projects_by_category.non_categorise %}
+                            {% if proj != project %}
+                                <div class="category-project">
+                                    <a href="{% url 'project_detail' proj.pk %}">
+                                        <img src="{% if proj.image %}{{ proj.image.url }}{% else %}{% static 'images/default.jpg' %} {% endif %}"
+                                             alt="{{ proj.title }}" class="img-fluid rounded">
+                                    </a>
+                                    <div class="project-info">
+                                        <h6>{{ proj.title |truncatewords:3 }}</h6>
+                                        <p>{{ proj.description|truncatewords:3 |safe }}</p>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <!-- Autres catégories -->
+                {% for category, projects in projects_by_category.items %}
+                    {% if category != "non_categorise" %}
+                        <h5 id="category-{{ forloop.counter }}" class="mt-4">{{ category|default:"Non catégorisé" }}</h5>
+                        <div class="card mb-3">
+                            {% for proj in projects %}
+                                {% if proj != project %}
+                                    <div class="category-project">
+                                        <a href="{% url 'project_detail' proj.pk %}">
+                                            <img src="{% if proj.image %}{{ proj.image.url }}{% else %}{% static 'images/default.jpg' %} {% endif %}"
+                                                 alt="{{ proj.title }}" class="img-fluid rounded">
+                                        </a>
+                                        <div class="project-info">
+                                            <h6>{{ proj.title |truncatewords:3 }}</h6>
+                                            <p>{{ proj.description|truncatewords:3 |safe }}</p>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Gestion de l'affichage/masquage des réponses
+    document.querySelectorAll('.toggle-replies-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const commentId = this.getAttribute('data-comment-id');
+            const repliesSection = document.getElementById(`replies-${commentId}`);
+            if (repliesSection.style.display === 'none') {
+                repliesSection.style.display = 'block';
+                this.textContent = 'Masquer les réponses';
+            } else {
+                repliesSection.style.display = 'none';
+                this.textContent = 'Afficher les réponses';
+            }
+        });
+    });
+</script>
+{% endblock %}

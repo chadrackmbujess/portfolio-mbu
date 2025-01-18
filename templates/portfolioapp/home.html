@@ -1,0 +1,355 @@
+{% extends 'portfolioapp/base.html' %}
+
+{% load static %}
+
+{% block head %}
+    <!-- Balises meta spécifiques à la page d'accueil -->
+    <meta name="description" content="Bienvenue sur le portfolio de Chadrack Mbu Jess, alias Chadrack Mbu, Chadrackmbu ou Chadrackmbujess. Découvrez mes projets, mes compétences et mes réalisations en développement web, design et multimédia.">
+    <meta name="keywords" content="Chadrack Mbu Jess, Chadrack Mbu, Chadrackmbu, Chadrackmbujess, portfolio, accueil, développement web, design, multimédia, projets, compétences">
+    <meta property="og:title" content="Accueil | Portfolio de Chadrack Mbu Jess">
+    <meta property="og:description" content="Bienvenue sur le portfolio de Chadrack Mbu Jess. Découvrez mes projets, mes compétences et mes réalisations en développement web, design et multimédia.">
+    <meta property="og:image" content="{% static 'images/profil1.jpg' %}">
+    <meta property="og:image:alt" content="Photo de profil de Chadrack Mbu Jess">
+    <meta property="og:url" content="http://www.votresite.com">
+    <meta name="twitter:title" content="Accueil | Portfolio de Chadrack Mbu Jess">
+    <meta name="twitter:description" content="Bienvenue sur le portfolio de Chadrack Mbu Jess. Découvrez mes projets, mes compétences et mes réalisations en développement web, design et multimédia.">
+    <meta name="twitter:image" content="{% static 'images/profil1.jpg' %}">
+    <meta name="twitter:image:alt" content="Photo de profil de Chadrack Mbu Jess">
+{% endblock %}
+
+{% block title %}Accueil | Portfolio de Chadrack Mbu Jess{% endblock %}
+
+{% block content %}
+    <div class="container text-center my-5">
+        <!-- Section d'introduction avec animation moderne -->
+        <div class="row align-items-center">
+            <div class="col-md-6 d-flex flex-column justify-content-center order-md-1 order-2">
+                <h1 class="display-4 welcome-text">Bienvenue sur mon Portfolio</h1>
+                <p class="lead text-muted tagline">Découvrez mes projets, mes compétences et bien plus encore !</p>
+                <a href="{% url 'projects' %}" class="btn btn-primary btn-lg mt-3 cta-button">Voir mes projets</a>
+            </div>
+            <div class="col-md-6 order-md-2 order-1">
+                <!-- Image dans un cercle avec des styles personnalisés -->
+                <div class="profile-image-container">
+                    <div class="profile-image-wrapper">
+                        <img src="{% static 'images/profil1.jpg' %}" alt="Photo de profil de Chadrack Mbu Jess" class="img-fluid rounded-circle profile-image">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section des projets récents avec design moderne -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <h2 class="mb-4">Projets récents</h2>
+                <div id="projectsCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        {% for project in projects %}
+                        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                            <div class="project-card">
+                                {% if project.image %}
+                                    <img src="{{ project.image.url }}" class="d-block w-100 carousel-image" alt="{{ project.title }}">
+                                {% else %}
+                                    <img src="{% static 'images/default-project.jpg' %}" class="d-block w-100 carousel-image" alt="Image par défaut">
+                                {% endif %}
+                                <div class="project-overlay">
+                                    <div class="project-content">
+                                        <h5>{{ project.title }}</h5>
+                                        <p>{{ project.description }}</p>
+                                        <a href="#" class="btn btn-outline-light">Voir plus</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <!-- Contrôles du carousel -->
+                    <button class="carousel-control-prev" type="button" data-bs-target="#projectsCarousel" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Précédent</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#projectsCarousel" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Suivant</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section des compétences avec animation -->
+        <div class="row mt-5">
+            <div class="col-12 fade-in">
+                <h2 class="mb-4">Mes compétences</h2>
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 shadow">
+                            <img src="{% static 'images/profil2.png' %}" class="card-img-top" alt="Développement Web">
+                            <div class="card-body">
+                                <h5 class="card-title">Développement Web</h5>
+                                <p class="card-text text-muted">Création de sites web responsives avec HTML, CSS, JavaScript et Django.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 shadow">
+                            <img src="{% static 'images/profil1.png' %}" class="card-img-top" alt="Intelligence Artificielle">
+                            <div class="card-body">
+                                <h5 class="card-title">Intelligence Artificielle</h5>
+                                <p class="card-text text-muted">Implémentation de solutions IA pour la détection d'anomalies et l'automatisation.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 shadow">
+                            <img src="{% static 'images/profil3.png' %}" class="card-img-top" alt="Design d'Interface">
+                            <div class="card-body">
+                                <h5 class="card-title">Design d'Interface</h5>
+                                <p class="card-text text-muted">Création de designs intuitifs et modernes pour des expériences utilisateurs optimales.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section témoignages -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <h2 class="mb-4">Ce que disent mes clients</h2>
+                <div class="card shadow">
+                    <div class="card-body">
+                        <blockquote class="blockquote">
+                            <p class="text-muted">"Grâce à ce développeur, mon site web a été optimisé et a gagné en visibilité. Il est très professionnel et rapide."</p>
+                            <footer class="blockquote-footer">Jean Dupont, CEO de XYZ</footer>
+                        </blockquote>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section de contact -->
+        <div class="row mt-5">
+            <div class="col-12 text-center">
+                <h3 class="mb-4">Prêt à travailler ensemble ?</h3>
+                <p class="text-muted">Si vous avez un projet en tête, n'hésitez pas à me contacter pour en discuter !</p>
+                <a href="{% url 'contact' %}" class="btn btn-success btn-lg mt-3">Contactez-moi</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Styles CSS personnalisés avec effets modernes et responsive -->
+    <style>
+        /* Effet de texte animé pour "Bienvenue sur mon Portfolio" */
+        .welcome-text {
+            font-size: 2.5rem; /* Taille réduite pour les petits écrans */
+            font-weight: bold;
+            background: linear-gradient(90deg, #007bff, #00bfff, #007bff);
+            background-size: 200% auto;
+            color: transparent;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: shine 3s linear infinite;
+        }
+
+        @keyframes shine {
+            to {
+                background-position: 200% center;
+            }
+        }
+
+        /* Effet de tagline avec apparition progressive */
+        .tagline {
+            font-size: 1.2rem; /* Taille réduite pour les petits écrans */
+            opacity: 0;
+            animation: fadeInUp 1.5s ease-out 0.5s forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Bouton CTA avec effet de survol moderne */
+        .cta-button {
+            font-size: 1rem; /* Taille réduite pour les petits écrans */
+            font-weight: bold;
+            padding: 10px 25px; /* Padding ajusté */
+            border: none;
+            border-radius: 30px;
+            background: linear-gradient(45deg, #007bff, #00bfff);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 123, 255, 0.5);
+        }
+
+        /* Styles pour l'image de profil */
+        .profile-image-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .profile-image-wrapper {
+            position: relative;
+            width: 100%; /* Largeur ajustée pour les petits écrans */
+            max-width: 400px; /* Taille maximale */
+            height: auto; /* Hauteur automatique */
+            aspect-ratio: 1/1; /* Garder un ratio carré */
+        }
+
+        .profile-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border: 10px solid #007bff;
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(0, 123, 255, 0.8), 0 0 40px rgba(0, 123, 255, 0.6), 0 0 60px rgba(0, 123, 255, 0.4);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .profile-image:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px rgba(0, 123, 255, 1), 0 0 50px rgba(0, 123, 255, 0.8), 0 0 70px rgba(0, 123, 255, 0.6);
+        }
+
+        /* Styles pour les images du carousel */
+        .carousel-image {
+            height: 400px; /* Hauteur fixe pour les images */
+            object-fit: cover; /* Assure que l'image couvre l'espace sans déformation */
+            border-radius: 15px; /* Coins arrondis */
+        }
+
+        /* Conteneur du carousel */
+        #projectsCarousel {
+            max-width: 800px; /* Largeur maximale du carousel */
+            margin: 0 auto; /* Centrer le carousel */
+        }
+
+        /* Superposition pour le texte */
+        .project-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            border-radius: 15px;
+        }
+
+        .project-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: white;
+            width: 100%;
+            padding: 20px;
+        }
+
+        .project-card:hover .project-overlay {
+            opacity: 1;
+        }
+
+        /* Bouton "Voir plus" */
+        .btn-outline-light {
+            border: 2px solid white;
+            color: white;
+            background: transparent;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .btn-outline-light:hover {
+            background: white;
+            color: #007bff;
+        }
+
+        /* Contrôles du carousel -->
+        .carousel-control-prev,
+        .carousel-control-next {
+            width: 5%;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 50%;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        .carousel-control-prev:hover,
+        .carousel-control-next:hover {
+            opacity: 1;
+        }
+
+        /* Animation globale pour la section -->
+        .fade-in {
+            opacity: 0;
+            animation: fadeIn 1s ease-in forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Media Queries pour le responsive design -->
+        @media (max-width: 768px) {
+            .welcome-text {
+                font-size: 2rem; /* Taille réduite pour les tablettes */
+            }
+
+            .tagline {
+                font-size: 1rem; /* Taille réduite pour les tablettes */
+            }
+
+            .profile-image-wrapper {
+                max-width: 300px; /* Taille réduite pour les tablettes */
+            }
+
+            .carousel-image {
+                height: 300px; /* Hauteur réduite pour les tablettes */
+            }
+        }
+
+        @media (max-width: 576px) {
+            .welcome-text {
+                font-size: 1.8rem; /* Taille réduite pour les mobiles */
+            }
+
+            .tagline {
+                font-size: 0.9rem; /* Taille réduite pour les mobiles */
+            }
+
+            .profile-image-wrapper {
+                max-width: 250px; /* Taille réduite pour les mobiles */
+            }
+
+            .cta-button {
+                font-size: 0.9rem; /* Taille réduite pour les mobiles */
+                padding: 8px 20px; /* Padding ajusté */
+            }
+
+            .carousel-image {
+                height: 200px; /* Hauteur réduite pour les mobiles */
+            }
+        }
+    </style>
+{% endblock %}

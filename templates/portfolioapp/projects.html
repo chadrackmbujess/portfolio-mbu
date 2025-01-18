@@ -1,0 +1,216 @@
+{% extends 'portfolioapp/base.html' %}
+{% block title %}Mes Projets{% endblock %}
+{% load static %}
+{% block content %}
+<div class="container my-5">
+    <!-- Titre principal -->
+    <h1 class="text-center mb-4">Mes Projets</h1>
+
+    <!-- Filtrage par catégorie avec défilement horizontal -->
+    <div class="text-center mb-4 position-relative d-flex align-items-center justify-content-center">
+        <!-- Flèche gauche -->
+        <button class="btn btn-outline-secondary scroll-left me-2" onclick="scrollCategories(-100)" style="display: none;">
+            <i class="bi bi-chevron-left"></i>
+        </button>
+
+        <!-- Conteneur scrollable pour les boutons -->
+        <div class="categories-scroll flex-grow-1" style="overflow-x: auto; white-space: nowrap; scroll-behavior: smooth;">
+            <!-- Bouton "Toutes" -->
+            <a href="?category=all" class="btn {% if request.GET.category == 'all' %}btn-secondary{% else %}btn-outline-secondary{% endif %} transition-all">
+                <i class="bi bi-grid"></i> Toutes
+            </a>
+            <!-- Boutons pour chaque catégorie -->
+            {% for cat in categories %}
+            <a href="?category={{ cat.id }}" class="btn {% if request.GET.category == cat.id|stringformat:'s' %}btn-secondary{% else %}btn-outline-secondary{% endif %} transition-all">
+                {% if "Développement" in cat.name %}
+                    <i class="bi bi-code"></i>
+                {% elif "Design" in cat.name %}
+                    <i class="bi bi-brush"></i>
+                {% elif "Marketing" in cat.name %}
+                    <i class="bi bi-megaphone"></i>
+                {% elif "IA" in cat.name %}
+                    <i class="bi bi-cpu"></i>
+                {% elif "Automatisation" in cat.name %}
+                    <i class="bi bi-robot"></i>
+                {% elif "Portfolio" in cat.name %}
+                    <i class="bi bi-briefcase"></i>
+                {% elif "Ecole" in cat.name %}
+                    <i class="bi bi-building"></i>
+                {% elif "BDD" in cat.name %}
+                    <i class="bi bi-database"></i>
+                {% elif "App Web" in cat.name %}
+                    <i class="bi bi-globe"></i>
+                {% elif "App Desktop" in cat.name %}
+                    <i class="bi bi-laptop"></i>
+                {% elif "Aide" in cat.name %}
+                    <i class="bi bi-life-preserver"></i>
+                {% elif "TV" in cat.name %}
+                    <i class="bi bi-tv"></i>
+                {% elif "Eglise" in cat.name %}
+                    <i class="bi bi-house-door"></i>
+                {% else %}
+                    <i class="bi bi-folder"></i> <!-- Icône par défaut -->
+                {% endif %}
+                {{ cat.name }}
+            </a>
+            {% endfor %}
+            <!-- Bouton pour les projets non catégorisés -->
+            <a href="?category=uncategorized" class="btn {% if request.GET.category == 'uncategorized' %}btn-secondary{% else %}btn-outline-secondary{% endif %} transition-all">
+                <i class="bi bi-folder"></i> Non catégorisé
+            </a>
+        </div>
+
+        <!-- Flèche droite -->
+        <button class="btn btn-outline-secondary scroll-right ms-2" onclick="scrollCategories(100)">
+            <i class="bi bi-chevron-right"></i>
+        </button>
+    </div>
+
+    <!-- Liste des projets -->
+    <div class="row">
+        {% for project in projects %}
+        <div class="col-md-4 mb-4 fade-in">
+            <!-- Carte de projet -->
+            <div class="card shadow-sm h-100 transition-all" style="border-radius: 15px;">
+                <!-- Image du projet -->
+                <img src="{{ project.image_url }}"
+                     class="card-img-top"
+                     alt="{{ project.title }}"
+                     style="height: 200px; object-fit: cover; border-top-left-radius: 15px; border-top-right-radius: 15px;">
+                <!-- Corps de la carte -->
+                <div class="card-body">
+                    <h5 class="card-title">{{ project.title }}</h5>
+                    <p class="card-text">{{ project.description|truncatewords:10|safe }}</p>
+                    <!-- Date de publication et auteur -->
+                    {% load humanize %}
+                    <div class="d-flex align-items-center mb-2">
+                        <!-- Photo de l'utilisateur avec image de secours -->
+                        <img src="{% if project.user.profile.image %}{{ project.user.profile.image.url }}{% else %}{% static 'images/default-profile.jpg' %}{% endif %}"
+                             alt="{{ project.user.username }}"
+                             class="rounded-circle me-2"
+                             style="width: 30px; height: 30px; object-fit: cover;">
+                        <!-- Texte "Publié par..." -->
+                        <p class="card-text mb-0">
+                            <small class="text-muted">
+                                Publié <strong>{{ project.created_at|naturaltime }}</strong> par <strong>{{ project.user.username }}</strong>
+                            </small>
+                        </p>
+                    </div>
+                    <!-- Catégorie du projet -->
+                    <span class="badge bg-secondary">{{ project.category|default:"Non catégorisé" }}</span>
+                    <!-- Bouton "En savoir plus" -->
+                    <a href="{% url 'project_detail' project.pk %}" class="btn btn-primary mt-2">En savoir plus</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <!-- Message si aucun projet n'est trouvé -->
+        <div class="text-center">
+            <p>Aucun projet trouvé.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- CSS personnalisé pour les animations et les styles -->
+<style>
+    /* Animation fluide au survol des cartes et des boutons */
+    .transition-all {
+        transition: all 0.3s ease-in-out;
+    }
+
+    /* Effet de survol pour les cartes */
+    .card:hover {
+        transform: translateY(-5px); /* Légère élévation */
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2); /* Ombre plus prononcée */
+    }
+
+    /* Effet de survol pour les boutons */
+    .btn:hover {
+        transform: scale(1.05); /* Légère mise à l'échelle */
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); /* Ombre au survol */
+    }
+
+    /* Effet de fondu à l'apparition des projets */
+    .fade-in {
+        opacity: 0;
+        animation: fadeIn 0.5s ease-in-out forwards;
+    }
+
+    /* Animation de fondu */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Conteneur des boutons de catégories */
+    .categories-scroll {
+        display: inline-block;
+        width: 80%; /* Ajustez la largeur selon vos besoins */
+        margin: 0 10px;
+        padding: 10px 0;
+        overflow-x: auto;
+        white-space: nowrap;
+        scroll-behavior: smooth;
+    }
+
+    /* Style des flèches */
+    .scroll-left, .scroll-right {
+        flex-shrink: 0; /* Empêche les flèches de rétrécir */
+    }
+
+    /* Masquer la barre de défilement */
+    .categories-scroll::-webkit-scrollbar {
+        display: none;
+    }
+
+    .categories-scroll {
+        -ms-overflow-style: none; /* IE et Edge */
+        scrollbar-width: none; /* Firefox */
+    }
+</style>
+
+<!-- JavaScript pour le défilement horizontal et la gestion des flèches -->
+<script>
+    const scrollContainer = document.querySelector('.categories-scroll');
+    const scrollLeftButton = document.querySelector('.scroll-left');
+    const scrollRightButton = document.querySelector('.scroll-right');
+
+    // Fonction pour faire défiler
+    function scrollCategories(offset) {
+        scrollContainer.scrollBy({
+            left: offset,
+            behavior: 'smooth'
+        });
+    }
+
+    // Fonction pour vérifier la position du scroll
+    function checkScroll() {
+        // Masquer la flèche gauche si on est au début
+        if (scrollContainer.scrollLeft <= 10) {
+            scrollLeftButton.style.display = 'none';
+        } else {
+            scrollLeftButton.style.display = 'block';
+        }
+
+        // Masquer la flèche droite si on est à la fin
+        if (scrollContainer.scrollLeft + scrollContainer.clientWidth >= scrollContainer.scrollWidth - 10) {
+            scrollRightButton.style.display = 'none';
+        } else {
+            scrollRightButton.style.display = 'block';
+        }
+    }
+
+    // Écouter l'événement de scroll
+    scrollContainer.addEventListener('scroll', checkScroll);
+
+    // Vérifier la position au chargement de la page
+    checkScroll();
+</script>
+{% endblock %}
